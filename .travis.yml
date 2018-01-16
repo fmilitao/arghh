@@ -1,0 +1,26 @@
+sudo: required
+dist: trusty
+addons:
+  chrome: stable
+
+# Due to issue in launching Chrome. Workaround from:
+# https://github.com/travis-ci/travis-ci/issues/9024
+before_script:
+    - "sudo chown root /opt/google/chrome/chrome-sandbox"
+    - "sudo chmod 4755 /opt/google/chrome/chrome-sandbox"
+
+language: node_js
+node_js:
+  - stable
+
+install:
+  - npm install
+
+script:
+  - set -v
+  - npm run lint
+  - echo 'Done linting'
+  - npm run test
+  - echo 'Done testing'
+  - npm run build
+  - echo 'Done building'
