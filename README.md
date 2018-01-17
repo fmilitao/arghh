@@ -1,5 +1,7 @@
 # ARGHH
 
+[![Build Status](https://travis-ci.org/fmilitao/arghh.svg?branch=master)](https://travis-ci.org/fmilitao/arghh)
+
 Install dependencies with `npm install`. Then you may:
 
 * Compile: `npm run build`. Generates `dist/index.html`.
