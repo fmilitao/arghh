@@ -24,3 +24,11 @@ script:
   - echo 'Done testing'
   - npm run build
   - echo 'Done building'
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: dist
+  github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
+  on:
+    branch: master
