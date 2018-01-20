@@ -8,6 +8,7 @@ module.exports = function (config) {
         colors: true,
         logLevel: config.LOG_INFO,
         files: [
+            "./karma.env.js",
             "./src/**/*.ts"
         ],
         preprocessors: {

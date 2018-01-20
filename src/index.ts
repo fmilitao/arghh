@@ -2,8 +2,8 @@ import * as _ from 'lodash';
 import printMe from './print';
 
 // defined via DefinePlugin in 'webpack.config.js'
-declare let __VERSION__: string;
-declare let __BUILD__: string;
+declare var __VERSION__: string;
+declare var __BUILD__: string;
 
 function component() {
   const element = document.createElement('div');
