@@ -1,0 +1,9 @@
+
+.foo {
+    font-family: monospace;
+    color: black;
+    font-size: 15px;
+    position: absolute;
+    bottom: 0;
+    padding: 10px;
+}

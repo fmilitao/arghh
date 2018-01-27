@@ -1,5 +1,5 @@
 import 'jasmine';
-import { hello } from './print';
+import { hello } from '../print';
 
 const TARGET: string = 'Hello world!';
 

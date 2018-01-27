@@ -8,14 +8,15 @@ module.exports = function (config) {
         colors: true,
         logLevel: config.LOG_INFO,
         files: [
-            "./karma.env.js",
-            "./src/**/*.ts"
+            // js must be first since it loads global variables
+            './src/**/*.js',
+            './src/**/*.ts'
         ],
         preprocessors: {
-            "./**/*.ts": ["karma-typescript"]
+            './**/*.ts': ['karma-typescript']
         },
         // do not specify plugins let karma load everything
-        browsers: ["ChromeHeadless"],
+        browsers: ['ChromeHeadless'],
         singleRun: true
     });
 };

@@ -1,15 +1,29 @@
-# ARGHH
-
-[![Build Status](https://travis-ci.org/fmilitao/arghh.svg?branch=master)](https://travis-ci.org/fmilitao/arghh)
-
-Install dependencies with `npm install`. Then you may:
-
-* Compile: `npm run build`. Outputs to `dist/`.
-
-* Test: `npm test`. Outputs coverage report to `coverage/`.
-
-* Lint: `npm run lint`. Also lints tests.
+# ARGHH [![Build Status](https://travis-ci.org/fmilitao/arghh.svg?branch=master)](https://travis-ci.org/fmilitao/arghh)
 
 Currently does nothing. Exciting!
 
 [Test Page](https://fmilitao.github.io/arghh/)
+
+## Setup/Building
+
+Install dependencies with `npm install` at the root of the project.
+
+Then you may:
+
+|command|effect|
+|---|---|
+|`npm run build`|Builds the bundle. Outputs to `dist/`.|
+|`npm run test`|Runs all tests. Outputs coverage report to `coverage/`.|
+|`npm run lint`|Lints all typescript files.|
+
+Commits on `master` are automatically deployed via Travis-CI to the `gh-pages` branch, if the build succeeds and produces the bundle.
+
+## Code Structure
+
+|directory|purpose|
+|---|---|
+|`src/typings`|all custom typescript definition files|
+|`src/test`|all test files|
+|`src/`|remaining files as left at the root of `src`|
+|`dist/`|contains the webpack-generated bundle|
+|`coverage/`|coverage report|

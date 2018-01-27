@@ -13,6 +13,13 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ]
+            },
+            {
                 test: /\.ts$/,
                 enforce: 'pre',
                 loader: 'tslint-loader',
@@ -36,9 +43,9 @@ module.exports = {
         new CleanWebpackPlugin(['dist']),
         new UglifyJSPlugin(),
         new DefinePlugin({
-            __VERSION__: JSON.stringify(process.env.TRAVIS_COMMIT  || 'SNAPSHOT'),
+            __VERSION__: JSON.stringify(process.env.TRAVIS_COMMIT || 'SNAPSHOT'),
             __BUILD__: JSON.stringify(new Date().toISOString())
-         }),
+        }),
         new HtmlWebpackPlugin({
             title: 'Test Output'
         })
