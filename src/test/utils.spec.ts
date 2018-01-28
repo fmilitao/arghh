@@ -1,4 +1,4 @@
-import axios from 'Axios';
+import axios from 'axios';
 import 'jasmine';
 import * as moment from 'moment';
 import * as utils from '../utils';
