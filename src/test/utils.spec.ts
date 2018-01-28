@@ -31,15 +31,15 @@ describe('utils.createBuildInfoElement', () => {
     });
 });
 
-describe('utils.UrlFetcher', () => {
-    it('should ??', () => {
-        spyOn(axios, 'get').and.callFake((url: string) => {
-            console.log(url);
-            return { then: () => ({ catch: () => { } }) };
-        });
-        const urlFetcher = new utils.UrlFetcher(axios);
-        urlFetcher.fetchUrl('asd', console.log);
+// describe('utils.UrlFetcher', () => {
+//     it('should ??', () => {
+//         spyOn(axios, 'get').and.callFake((url: string) => {
+//             console.log(url);
+//             return { then: () => ({ catch: () => { } }) };
+//         });
+//         const urlFetcher = new utils.UrlFetcher(axios);
+//         urlFetcher.fetchUrl('asd', console.log);
 
-        expect(axios.get).toHaveBeenCalled();
-    });
-});
+//         expect(axios.get).toHaveBeenCalled();
+//     });
+// });

@@ -8,7 +8,7 @@ export function printMe() {
     console.log('I get called from print.js!');
 }
 
-console.log('hello from "print.ts"!!');
+console.log('hello from "utils.ts"!!');
 
 export const hello = () => 'Hello world!';
 
@@ -40,11 +40,9 @@ export class UrlFetcher {
         private readonly axiosImpl: axios.AxiosStatic = axios.default
     ) { }
 
-    public fetchUrl(url: string, callback: (data: string) => void, proxyCors: boolean = false) {
+    public fetchUrl(url: string, proxyCors: boolean = false): Promise<string> {
         const targetUrl = proxyCors ? this.addCorsProxy(url) : url;
-        this.axiosImpl.get(targetUrl)
-            .then(response => callback(response.data))
-            .catch(console.error);
+        return this.axiosImpl.get(targetUrl).then(response => response.data);
     }
 
     public addCorsProxy(url: string) {

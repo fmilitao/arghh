@@ -44,6 +44,7 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(['dist']),
         // Caution that ugly shrinks the size but break source-map
+        // FIXME: uncomment the following before merge
         // new UglifyJSPlugin(),
         new DefinePlugin({
             __VERSION__: JSON.stringify(process.env.TRAVIS_COMMIT || 'SNAPSHOT'),
