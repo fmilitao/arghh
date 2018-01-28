@@ -1,28 +1,8 @@
-import axios from 'axios';
 import * as lodash from 'lodash';
-import printMe from './print';
 import './style.css';
+import * as utils from './utils';
 
-function fetchUrl(url: string) {
-  axios.get(url)
-    .then(response => console.log(`${url}:\n${JSON.stringify(response.data)}`))
-    .catch(console.error);
-}
-
-function addCorsProxy(url: string) {
-  // return `http://cors-proxy.htmldriven.com/?url=${url}`;
-  return `https://cors-anywhere.herokuapp.com/${url}`;
-}
-
-function testFetch() {
-  [
-    addCorsProxy('https://www.metaweather.com/api/location/search/?query=london'),
-    'https://yesno.wtf/api',
-    'https://maps.googleapis.com/maps/api/geocode/json?address=Florence'
-  ].forEach(fetchUrl);
-}
-
-function component() {
+function testComponent() {
   const element = document.createElement('div');
   const btn = document.createElement('button');
 
@@ -31,19 +11,41 @@ function component() {
   element.classList.add('hello');
 
   btn.innerHTML = 'Click me and check the console!';
-  btn.onclick = printMe;
+  btn.onclick = utils.printMe;
   element.appendChild(btn);
-
-  const divElement = document.createElement('div');
-  divElement.classList.add('foo');
-  divElement.innerHTML = `Commit: ${__VERSION__} of ${__BUILD__}`;
-  console.log(__VERSION__);
-  console.log(__BUILD__);
-  element.appendChild(divElement);
 
   return element;
 }
 
-document.body.appendChild(component());
+function urlComponent(targetElement: HTMLElement) {
+  const fetcher = new utils.UrlFetcher();
 
-testFetch();
+  // http://freegeoip.net/json/
+  // https://freegeoip.net/?q=195.99.14.79
+
+  // see more at: https://github.com/toddmotto/public-apis
+  const examples: Array<[string, boolean]> =
+    [
+      // for sunset/dawn at location // &formatted=0&date=2018-08-27
+      ['https://api.sunrise-sunset.org/json?lat=51.5073509&lng=-0.1277583', false],
+      // for weather
+      ['https://www.metaweather.com/api/location/search/?query=london', true],
+      // basic test
+      ['https://yesno.wtf/api', false],
+      // for getting geo coords
+      // ['https://maps.googleapis.com/maps/api/geocode/json?address=London', false]
+    ];
+
+  examples.forEach(([url, cors]) => fetcher.fetchUrl(url, data => {
+    const tmp = document.createElement('div');
+    tmp.classList.add('result');
+    tmp.innerText = url + ' \n ' + JSON.stringify(data);
+    targetElement.appendChild(tmp);
+  }, cors));
+}
+
+const root = document.body;
+
+// root.appendChild(testComponent());
+root.appendChild(utils.createBuildInfoElement('buildInfo', 'https://github.com/fmilitao/arghh/commit/'));
+urlComponent(root);

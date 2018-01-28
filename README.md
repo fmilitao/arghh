@@ -15,6 +15,8 @@ Then you may:
 |`npm run build`|Builds the bundle. Outputs to `dist/`.|
 |`npm run test`|Runs all tests. Outputs coverage report to `coverage/`.|
 |`npm run lint`|Lints all typescript files.|
+|`npm run watch`|Make webpack watch for changes and auto-build when needed.|
+|`npm run serve`|Make webpack watch for changes and serve the result with auto-reload.|
 
 Commits on `master` are automatically deployed via Travis-CI to the `gh-pages` branch, if the build succeeds and produces the bundle.
 

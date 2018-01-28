@@ -5,6 +5,7 @@
     ],
     "jsRules": {},
     "rules": {
+        "no-empty": false,
         "trailing-comma": false,
         "arrow-parens": false,
         "no-console": false,

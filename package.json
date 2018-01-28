@@ -11,7 +11,7 @@
     "test": "karma start",
     "build": "webpack",
     "watch": "webpack --watch",
-    "start": "webpack-dev-server --open"
+    "serve": "webpack-dev-server --open"
   },
   "devDependencies": {
     "@types/jasmine": "^2.8.4",

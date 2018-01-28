@@ -6,6 +6,8 @@ const DefinePlugin = require('webpack').DefinePlugin;
 
 module.exports = {
     entry: './src/index.ts',
+    // 'devtool' option was picked to work well with karma stuff
+    // see https://github.com/TypeStrong/ts-loader for more details
     devtool: 'inline-source-map',
     devServer: {
         contentBase: './dist'
@@ -41,7 +43,8 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
-        new UglifyJSPlugin(),
+        // Caution that ugly shrinks the size but break source-map
+        // new UglifyJSPlugin(),
         new DefinePlugin({
             __VERSION__: JSON.stringify(process.env.TRAVIS_COMMIT || 'SNAPSHOT'),
             __BUILD__: JSON.stringify(new Date().toISOString())

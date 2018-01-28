@@ -1,9 +1,17 @@
 
-.foo {
-    font-family: monospace;
+.buildInfo {
+    font-family: Courier New, Courier, monospace;
     color: black;
-    font-size: 15px;
+    font-size: 12px;
+    font-weight: bold;
     position: absolute;
     bottom: 0;
-    padding: 10px;
+    padding: 5px;
+}
+
+.result {
+    padding: 5px;
+    margin: 5px;
+    background-color: lightgray;
+    border-radius: 3px;
 }
