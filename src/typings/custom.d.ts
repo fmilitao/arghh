@@ -8,3 +8,21 @@ declare var __BUILD__: string;
 declare module '*.css' {
   // intentionally empty
 }
+
+interface ISunsetSunriseServiceData {
+  sunrise: string;
+  sunset: string;
+  solar_noon: string;
+  day_length: number;
+  civil_twilight_begin: string;
+  civil_twilight_end: string;
+  nautical_twilight_begin: string;
+  nautical_twilight_end: string;
+  astronomical_twilight_begin: string;
+  astronomical_twilight_end: string;
+}
+
+interface ICoordinatesServiceData {
+  latitude: number;
+  longitude: number;
+}

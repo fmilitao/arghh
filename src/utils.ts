@@ -1,16 +1,5 @@
 import * as axios from 'axios';
-
-//
-// Following are just test
-//
-
-export function printMe() {
-    console.log('I get called from print.js!');
-}
-
-console.log('hello from "utils.ts"!!');
-
-export const hello = () => 'Hello world!';
+import * as moment from 'moment';
 
 //
 // Following are potentially useful
@@ -24,6 +13,10 @@ export function createBuildInfoElement(style: string, baseUrl: string) {
     divElement.innerHTML = `${commitInfo}<br/>${buildDate}`;
     return divElement;
 }
+
+//
+// Url fetching
+//
 
 export class UrlFetcher {
     // Unfortunately, not all API set the origin, etc. http response header correctly
@@ -47,5 +40,35 @@ export class UrlFetcher {
 
     public addCorsProxy(url: string) {
         return `${UrlFetcher.CORS_PROXIES[1]}${url}`;
+    }
+}
+
+//
+// Date parsing
+//
+
+export class DateFormatter {
+    public static fromUtcString(utcDateString: string) {
+        return new DateFormatter(moment.utc(utcDateString));
+    }
+
+    private static DATE_FORMAT = 'YYYY-MM-DD';
+
+    constructor(
+        private readonly now: moment.Moment = moment()
+    ) { }
+
+    public getTodayAsString() {
+        return this.now.format(DateFormatter.DATE_FORMAT);
+    }
+
+    public getSecondsOfToday() {
+        const midnight = this.now.clone().startOf('day');
+        return this.now.diff(midnight, 'seconds');
+    }
+
+    public getDiffAsString(diffDays: number) {
+        // all moments are mutable so we must copy
+        return moment(this.now).add(diffDays, 'days').format(DateFormatter.DATE_FORMAT);
     }
 }

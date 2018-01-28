@@ -1,17 +1,9 @@
 import axios from 'Axios';
 import 'jasmine';
+import * as moment from 'moment';
 import * as utils from '../utils';
 
-const TARGET: string = 'Hello world!';
-
-console.log(`HELLO FROM SPEC ${TARGET}`);
-
-describe('Hello function', () => {
-    it('should return hello world', () => {
-        const result = utils.hello();
-        expect(result).toEqual(TARGET);
-    });
-});
+console.log(`Test runner.`);
 
 describe('utils.createBuildInfoElement', () => {
     it('should add style and commit url', () => {
@@ -31,15 +23,54 @@ describe('utils.createBuildInfoElement', () => {
     });
 });
 
-// describe('utils.UrlFetcher', () => {
-//     it('should ??', () => {
-//         spyOn(axios, 'get').and.callFake((url: string) => {
-//             console.log(url);
-//             return { then: () => ({ catch: () => { } }) };
-//         });
-//         const urlFetcher = new utils.UrlFetcher(axios);
-//         urlFetcher.fetchUrl('asd', console.log);
+describe('utils.UrlFetcher', () => {
+    const fakeResponse = (a: any) => ({ then: (f: any) => fakeResponse(f(a)) });
+    const fakeGet = (a: any) => ({ then: (f: any) => fakeResponse(f({ data: a })) });
 
-//         expect(axios.get).toHaveBeenCalled();
-//     });
-// });
+    it('should fetch a url', done => {
+        const fakeUrl = 'hello/how/are/you?';
+        spyOn(axios, 'get').and.callFake(fakeGet);
+        const urlFetcher = new utils.UrlFetcher(axios);
+        urlFetcher.fetchUrl(fakeUrl).then(result => {
+            expect(axios.get).toHaveBeenCalled();
+            expect(result).toEqual(fakeUrl);
+            done();
+        });
+    });
+});
+
+describe('utils.DateFormatter', () => {
+    const testMoment = moment('2017-08-08');
+    const formatter = new utils.DateFormatter(testMoment);
+
+    it('should format today as YYYY-MM-DD', () => {
+        expect(formatter.getTodayAsString()).toEqual('2017-08-08');
+    });
+    it('should format future dates as YYYY-MM-DD', () => {
+        expect(formatter.getDiffAsString(1)).toEqual('2017-08-09');
+        expect(formatter.getDiffAsString(2)).toEqual('2017-08-10');
+    });
+    it('should format current date as YYYY-MM-DD', () => {
+        expect(formatter.getDiffAsString(0)).toEqual('2017-08-08');
+    });
+    it('should format past dates as YYYY-MM-DD', () => {
+        expect(formatter.getDiffAsString(-2)).toEqual('2017-08-06');
+        expect(formatter.getDiffAsString(-1)).toEqual('2017-08-07');
+    });
+
+    it('should parse UTC string dates', () => {
+        const value = utils.DateFormatter.fromUtcString('2018-02-28T07:43:35+00:00');
+        expect(value.getTodayAsString()).toEqual('2018-02-28');
+    });
+
+    [
+        { date: '2018-01-21T00:00:00', expected: 0 },
+        { date: '2018-01-21T00:01:00', expected: 60 },
+        { date: '2018-01-21T23:59:59', expected: (24 * 60 * 60 - 1) }
+    ].forEach(({ date, expected }) => {
+        it(`should get ${expected} seconds since start of day ${date}`, () => {
+            const value = utils.DateFormatter.fromUtcString(date);
+            expect(value.getSecondsOfToday()).toEqual(expected);
+        });
+    });
+});
