@@ -78,8 +78,8 @@ const root = document.body;
 root.appendChild(testComponent());
 root.appendChild(utils.createBuildInfoElement('buildInfo', 'https://github.com/fmilitao/arghh/commit/'));
 
-// getSunriseSunsetForCurrentLocation(root)
-//   .then(data => drawing.drawSunriseSunsetArc(data, root));
+getSunriseSunsetForCurrentLocation(root)
+  .then(data => drawing.drawSunriseSunsetArc(data, root));
 
 // https://api.sunrise-sunset.org/json?lat=38.7222524&lng=-9.1393366&formatted=0
 // for lisbon
@@ -110,4 +110,22 @@ const mockLondon: ISunsetSunriseServiceData = {
   sunset: '2018-01-28T16:43:11+00:00'
 };
 
-drawing.drawSunriseSunsetArc(mockLisbon, root);
+// drawing.drawSunriseSunsetArc(mockLisbon, root);
+
+const x = document.createElement('div');
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      x.innerHTML = 'Latitude: ' + position.coords.latitude + '<br>Longitude: ' + position.coords.longitude;
+      x.classList.add('result');
+    },
+    error => {
+      console.log(error);
+      x.innerHTML = `Error: ${JSON.stringify(error.message)}`;
+      x.classList.add('error');
+    }
+  );
+} else {
+  x.innerHTML = 'Geolocation is not supported by this browser.';
+}
+root.appendChild(x);

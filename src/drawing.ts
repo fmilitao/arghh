@@ -119,6 +119,21 @@ export function d3Test(
       .attr('d', arc)
       .classed(d.style, true);
   }
+
+  // rotation is in degrees!
+  const max = 24 * 60 * 60;
+  const slice = 360 / max;
+  const now = new utils.DateFormatter().getSecondsOfToday();
+
+  const rotation = now * slice;
+
+  plotGroup.append('line')
+    .classed('marker', true)
+    .attr('x1', 0)
+    .attr('y1', 0)
+    .attr('x2', 0)
+    .attr('y2', -200)
+    .attr('transform', `rotate(${rotation})`);
 }
 
 // ======================================================================
