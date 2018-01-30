@@ -26,6 +26,6 @@ Commits on `master` are automatically deployed via Travis-CI to the `gh-pages` b
 |---|---|
 |`src/typings`|All custom typescript definition files.|
 |`src/test`|All test files.|
-|`src/`|Remaining files as left at the root of `src`.|
+|`src/`|Remaining files are left at the root of `src`.|
 |`dist/`|Contains the webpack-generated bundle.|
 |`coverage/`|Coverage report.|
