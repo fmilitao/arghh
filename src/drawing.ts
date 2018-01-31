@@ -8,17 +8,22 @@ function addEvent(text: string, targetElement: HTMLElement) {
   targetElement.appendChild(tmp);
 }
 
+const MAX_DAY_SECONDS = 24 * 60 * 60;
+
 export function drawSunriseSunsetArc(
   data: ISunsetSunriseServiceData,
   targetElement: HTMLElement
 ) {
-  const MAX_DAY = 24 * 60 * 60;
   const convert = (date: string | number) => {
     const value = typeof date === 'string' ?
       utils.DateFormatter.fromUtcString(date).getSecondsOfToday() :
       date;
-    return (value / MAX_DAY) * 2 * Math.PI;
+    return (value / MAX_DAY_SECONDS) * 2 * Math.PI;
   };
+
+  // FIXME: this is wrong. See:
+  // http://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
+  // https://sunrise-sunset.org/
 
   const dawn = [data.civil_twilight_begin, data.sunrise].map(convert);
   const day = [data.sunrise, data.sunset].map(convert);
@@ -61,6 +66,7 @@ export function d3Test(
 ) {
   const width = window.innerWidth;
   const height = window.innerHeight;
+  const radius = Math.min(width, height) * 0.7 / 2;
 
   const svg = d3.select('body')
     .append('svg')
@@ -109,7 +115,7 @@ export function d3Test(
   for (const d of data) {
     const arc = d3.arc()
       .innerRadius(0)
-      .outerRadius(200)
+      .outerRadius(radius)
       .startAngle(d.time[0])
       .endAngle(d.time[1]);
 
@@ -121,8 +127,7 @@ export function d3Test(
   }
 
   // rotation is in degrees!
-  const max = 24 * 60 * 60;
-  const slice = 360 / max;
+  const slice = 360 / MAX_DAY_SECONDS;
   const now = new utils.DateFormatter().getSecondsOfToday();
 
   const rotation = now * slice;
@@ -132,7 +137,7 @@ export function d3Test(
     .attr('x1', 0)
     .attr('y1', 0)
     .attr('x2', 0)
-    .attr('y2', -200)
+    .attr('y2', -radius)
     .attr('transform', `rotate(${rotation})`);
 }
 

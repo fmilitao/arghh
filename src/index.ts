@@ -129,3 +129,5 @@ if (navigator.geolocation) {
   x.innerHTML = 'Geolocation is not supported by this browser.';
 }
 root.appendChild(x);
+
+Promise.resolve('Promises work in build!').then(console.log);

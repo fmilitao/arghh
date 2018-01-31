@@ -20,6 +20,11 @@ Then you may:
 
 Commits on `master` are automatically deployed via Travis-CI to the `gh-pages` branch, if the build succeeds and produces the bundle.
 
+For the `build`/`watch`/`serve` options, you can set `ENV=test` to build more quickly but produce a larger `bundle.js` file.
+You can run it as the following one-liner:
+
+    ENV=test npm run build
+
 ## Code Structure
 
 |directory|purpose|

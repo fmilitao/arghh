@@ -3,7 +3,8 @@ import 'jasmine';
 import * as moment from 'moment';
 import * as utils from '../utils';
 
-console.log(`Test runner.`);
+console.log('Test runner.');
+Promise.resolve('Promises work in tests!').then(console.log);
 
 describe('utils.createBuildInfoElement', () => {
     it('should add style and commit url', () => {
@@ -24,12 +25,9 @@ describe('utils.createBuildInfoElement', () => {
 });
 
 describe('utils.UrlFetcher', () => {
-    const fakeResponse = (a: any) => ({ then: (f: any) => fakeResponse(f(a)) });
-    const fakeGet = (a: any) => ({ then: (f: any) => fakeResponse(f({ data: a })) });
-
     it('should fetch a url', done => {
         const fakeUrl = 'hello/how/are/you?';
-        spyOn(axios, 'get').and.callFake(fakeGet);
+        spyOn(axios, 'get').and.callFake((url: string) => Promise.resolve({data: url}));
         const urlFetcher = new utils.UrlFetcher(axios);
         urlFetcher.fetchUrl(fakeUrl).then(result => {
             expect(axios.get).toHaveBeenCalled();

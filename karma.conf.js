@@ -17,6 +17,18 @@ module.exports = function (config) {
         },
         // do not specify plugins let karma load everything
         browsers: ['ChromeHeadless'],
-        singleRun: true
+        singleRun: true,
+        karmaTypescriptConfig: {
+            compilerOptions: {
+                "lib": [
+                    "dom",
+                    "es6"
+                ]
+            },
+            // Unfortunately, not all options in 'tsconfig' work
+            // well with karma so the following cannot be used.
+            // Instead we must copy the relevant parts as needed.
+            // tsconfig: "./tsconfig.json"
+        }
     });
 };
