@@ -53,6 +53,7 @@ export class DateFormatter {
     }
 
     private static DATE_FORMAT = 'YYYY-MM-DD';
+    private static HOUR_FORMAT = 'HH:mm:ss';
 
     constructor(
         private readonly now: moment.Moment = moment()
@@ -60,6 +61,10 @@ export class DateFormatter {
 
     public getTodayAsString() {
         return this.now.format(DateFormatter.DATE_FORMAT);
+    }
+
+    public getHourAsString() {
+        return this.now.format(DateFormatter.HOUR_FORMAT);
     }
 
     public getSecondsOfToday() {

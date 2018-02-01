@@ -9,7 +9,7 @@ declare module '*.css' {
   // intentionally empty
 }
 
-interface ISunsetSunriseServiceData {
+interface SunsetSunrise {
   sunrise: string;
   sunset: string;
   solar_noon: string;
@@ -22,7 +22,7 @@ interface ISunsetSunriseServiceData {
   astronomical_twilight_end: string;
 }
 
-interface ICoordinatesServiceData {
+interface GeoLocation {
   latitude: number;
   longitude: number;
 }

@@ -4,6 +4,8 @@ Currently does nothing. Exciting!
 
 [Test Page](https://fmilitao.github.io/arghh/)
 
+More [public APIs](https://github.com/toddmotto/public-apis) to play with.
+
 ## Setup/Building
 
 Install dependencies with `npm install` at the root of the project.

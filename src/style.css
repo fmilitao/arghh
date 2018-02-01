@@ -62,3 +62,11 @@ svg {
     stroke-linecap: round;
     fill: 'none';
 }
+
+.labels {
+    text-align: right;
+}
+
+.values {
+    font-weight: bold;
+}

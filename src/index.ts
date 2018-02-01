@@ -1,4 +1,5 @@
 import * as drawing from './drawing';
+import * as services from './services';
 import './style.css';
 import * as utils from './utils';
 
@@ -20,53 +21,11 @@ function testComponent() {
 // Add Result
 //
 
-function addResult(url: string, data: any, targetElement: HTMLElement) {
+function addMessage(message: string, style: string, targetElement: HTMLElement = document.body) {
   const tmp = document.createElement('div');
-  tmp.classList.add('result');
-  tmp.innerText = url + ' \n ' + JSON.stringify(data);
+  tmp.classList.add(style);
+  tmp.innerHTML = message;
   targetElement.appendChild(tmp);
-}
-
-//
-// Fetch lat/long then sunrise/sunset
-//
-
-// see more APIs at: https://github.com/toddmotto/public-apis
-
-function getSunriseSunsetForCurrentLocation(targetElement: HTMLElement): Promise<ISunsetSunriseServiceData> {
-  // coordinate services urls
-  // http://freegeoip.net/json/ -- may be blocked by adblockers!
-  // https://www.metaweather.com/api/location/search/?query=london -- requires CORS proxy
-  // https://maps.googleapis.com/maps/api/geocode/json?address=London -- requires API key
-  const coordinatesService = 'https://freegeoip.net/json/';
-
-  // sunrise/sunset service url
-  const sunsetSunriseService = (lat: number = 51.5073509, long: number = -0.1277583) => {
-    const date = new utils.DateFormatter().getTodayAsString();
-    return `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${long}&formatted=0&date=${date}`;
-  };
-
-  const parseCoordinates = (data: any) => data as ICoordinatesServiceData;
-  const parseSunriseSunset = (data: any) => data.results as ISunsetSunriseServiceData;
-
-  const fetcher = new utils.UrlFetcher();
-  return fetcher.fetchUrl(coordinatesService)
-    // fetch local coordinates
-    .then(data => {
-      const coordinates = parseCoordinates(data);
-      addResult(coordinatesService, coordinates, targetElement);
-      return coordinates;
-    })
-    // fetch sunset sunrise data
-    .then(coordinates => {
-      const sunsetSunriseUrl = sunsetSunriseService(coordinates.latitude, coordinates.longitude);
-      return fetcher.fetchUrl(sunsetSunriseUrl)
-        .then(data => {
-          const sunsetSunrise = parseSunriseSunset(data);
-          addResult(sunsetSunriseUrl, sunsetSunrise, targetElement);
-          return sunsetSunrise;
-        });
-    });
 }
 
 //
@@ -78,12 +37,14 @@ const root = document.body;
 root.appendChild(testComponent());
 root.appendChild(utils.createBuildInfoElement('buildInfo', 'https://github.com/fmilitao/arghh/commit/'));
 
-getSunriseSunsetForCurrentLocation(root)
-  .then(data => drawing.drawSunriseSunsetArc(data, root));
+//
+// Promises tests
+//
 
-// https://api.sunrise-sunset.org/json?lat=38.7222524&lng=-9.1393366&formatted=0
-// for lisbon
-const mockLisbon: ISunsetSunriseServiceData = {
+Promise.resolve('Promises work in build!').then(console.log);
+
+// for Lisbon
+const mockLisbon: SunsetSunrise = {
   astronomical_twilight_begin: '2018-01-28T06:13:40+00:00',
   astronomical_twilight_end: '2018-01-28T19:25:29+00:00',
   civil_twilight_begin: '2018-01-28T07:17:02+00:00',
@@ -96,8 +57,8 @@ const mockLisbon: ISunsetSunriseServiceData = {
   sunset: '2018-01-28T17:53:57+00:00'
 };
 
-// for london
-const mockLondon: ISunsetSunriseServiceData = {
+// for London
+const mockLondon: SunsetSunrise = {
   astronomical_twilight_begin: '2018-01-28T05:47:19+00:00',
   astronomical_twilight_end: '2018-01-28T18:39:27+00:00',
   civil_twilight_begin: '2018-01-28T07:07:03+00:00',
@@ -110,24 +71,60 @@ const mockLondon: ISunsetSunriseServiceData = {
   sunset: '2018-01-28T16:43:11+00:00'
 };
 
-// drawing.drawSunriseSunsetArc(mockLisbon, root);
+const geoLondon: GeoLocation = {
+  latitude: 51.5073509,
+  longitude: -0.1277583
+};
 
-const x = document.createElement('div');
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-    position => {
-      x.innerHTML = 'Latitude: ' + position.coords.latitude + '<br>Longitude: ' + position.coords.longitude;
-      x.classList.add('result');
-    },
-    error => {
-      console.log(error);
-      x.innerHTML = `Error: ${JSON.stringify(error.message)}`;
-      x.classList.add('error');
-    }
-  );
-} else {
-  x.innerHTML = 'Geolocation is not supported by this browser.';
-}
-root.appendChild(x);
+const geoLisbon: GeoLocation = {
+  latitude: 38.7222524,
+  longitude: -9.1393366
+};
 
-Promise.resolve('Promises work in build!').then(console.log);
+const locationPromise: Promise<GeoLocation> = services.getNavigatorGeoLocation()
+  .then(position => {
+    addMessage(
+      'Latitude: ' + position.latitude + '<br/>Longitude: ' + position.longitude,
+      'result',
+      root
+    );
+    return position;
+  })
+  .catch(error => {
+    console.log(error);
+    addMessage(
+      `Error: ${JSON.stringify(error.message)}<br/>Using: ${JSON.stringify(geoLondon)}`,
+      'error',
+      root
+    );
+    // using mock location for london
+    return geoLondon;
+  });
+
+const sunsetSunrisePromise: Promise<SunsetSunrise> =
+  locationPromise
+    .then(services.getSunriseSunset)
+    .catch(error => mockLondon);
+
+const time = (date: string) => utils.DateFormatter.fromUtcString(date).getHourAsString();
+
+sunsetSunrisePromise
+  .then(data => {
+    addMessage(
+      `<table>
+      <tr><td class='labels'>Dawn:</td>
+        <td class='values'>${time(data.civil_twilight_begin)}</td></tr>
+      <tr><td class='labels'>Sunrise:</td>
+        <td class='values'> ${time(data.sunrise)}</td></tr>
+      <tr><td class='labels'>Sunset:</td>
+        <td class='values'>${time(data.sunset)}</td></tr>
+      <tr><td class='labels'>Dusk:</td>
+        <td class='values'>${time(data.civil_twilight_end)}</td></tr>
+      </table>`,
+      'result',
+      root
+    );
+    // addMessage(`Length: ${data.day_length}`, 'result');
+    return data;
+  })
+  .then(data => drawing.drawSunriseSunsetArc(data, root));

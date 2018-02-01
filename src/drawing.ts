@@ -1,27 +1,19 @@
 import * as d3 from 'd3';
 import * as utils from './utils';
 
-function addEvent(text: string, targetElement: HTMLElement) {
-  const tmp = document.createElement('div');
-  tmp.classList.add('result');
-  tmp.innerText = text;
-  targetElement.appendChild(tmp);
-}
-
 const MAX_DAY_SECONDS = 24 * 60 * 60;
 
+function convert(date: string | number) {
+  const value = typeof date === 'string' ?
+    utils.DateFormatter.fromUtcString(date).getSecondsOfToday() :
+    date;
+  return (value / MAX_DAY_SECONDS) * 2 * Math.PI;
+}
+
 export function drawSunriseSunsetArc(
-  data: ISunsetSunriseServiceData,
+  data: SunsetSunrise,
   targetElement: HTMLElement
 ) {
-  const convert = (date: string | number) => {
-    const value = typeof date === 'string' ?
-      utils.DateFormatter.fromUtcString(date).getSecondsOfToday() :
-      date;
-    return (value / MAX_DAY_SECONDS) * 2 * Math.PI;
-  };
-
-  // FIXME: this is wrong. See:
   // http://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
   // https://sunrise-sunset.org/
 
@@ -50,12 +42,6 @@ export function drawSunriseSunsetArc(
       time: night
     }
   ];
-
-  addEvent(`Dawn: ${data.civil_twilight_begin}`, targetElement);
-  addEvent(`Sunrise: ${data.sunrise}`, targetElement);
-  addEvent(`Sunset: ${data.sunset}`, targetElement);
-  addEvent(`Dusk: ${data.civil_twilight_end}`, targetElement);
-  addEvent(`Length: ${data.day_length}`, targetElement);
 
   d3Test(info, targetElement);
 }
@@ -108,7 +94,7 @@ export function d3Test(
   // ===
 
   const plotGroup = svg.append('g')
-    .attr('transform', `translate(${width / 2},${height / 2})`);
+    .attr('transform', `translate(${width / 2},${height / 2})rotate(180)`);
 
   // console.log(data);
 

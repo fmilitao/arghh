@@ -41,6 +41,11 @@ describe('utils.DateFormatter', () => {
     const testMoment = moment('2017-08-08');
     const formatter = new utils.DateFormatter(testMoment);
 
+    it('should format hours as HH:mm:ss', () => {
+        const time = utils.DateFormatter.fromUtcString('2017-08-08 20:31:12');
+        expect(time.getHourAsString()).toEqual('20:31:12');
+    });
+
     it('should format today as YYYY-MM-DD', () => {
         expect(formatter.getTodayAsString()).toEqual('2017-08-08');
     });
