@@ -27,11 +27,6 @@ svg {
     /* fill: url(#svgGradient); */
 }
 
-.hello {
-    font-size: 20px;
-    margin: 2px;
-}
-
 .buildInfo {
     font-family: Courier New, Courier, monospace;
     color: black;
@@ -44,16 +39,30 @@ svg {
 
 .result {
     padding: 5px;
-    margin: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+
     background-color: rgba(211, 211, 211, 0.5);
     border-radius: 3px;
 }
 
+.resultList {
+    display: inline-block;
+    margin: 2px;
+}
+
 .error {
     padding: 5px;
-    margin: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+
     background-color: rgba(255, 0, 0, 0.5);
     border-radius: 3px;
+}
+
+.hello {
+    font-size: 20px;
+    margin: 2px;
 }
 
 .marker {

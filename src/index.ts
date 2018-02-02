@@ -9,7 +9,6 @@ import * as utils from './utils';
 
 function testComponent() {
   const element = document.createElement('div');
-  const btn = document.createElement('button');
 
   element.innerHTML = 'Hello Arghh!';
   element.classList.add('hello');
@@ -32,7 +31,9 @@ function addMessage(message: string, style: string, targetElement: HTMLElement =
 // Other tests
 //
 
-const root = document.body;
+const root = document.createElement('div');
+root.classList.add('resultList');
+document.body.appendChild(root);
 
 root.appendChild(testComponent());
 root.appendChild(utils.createBuildInfoElement('buildInfo', 'https://github.com/fmilitao/arghh/commit/'));
@@ -81,10 +82,21 @@ const geoLisbon: GeoLocation = {
   longitude: -9.1393366
 };
 
+function toHTMLTable(table: any[][]) {
+  const tableContent = table.map(([label, value]) =>
+    `<tr><td class='labels'>${label}:</td><td class='values'>${value}</td></tr>`
+  ).join('');
+
+  return '<table>' + tableContent + '</table>';
+}
+
 const locationPromise: Promise<GeoLocation> = services.getNavigatorGeoLocation()
   .then(position => {
     addMessage(
-      'Latitude: ' + position.latitude + '<br/>Longitude: ' + position.longitude,
+      toHTMLTable([
+        ['Latitude', position.latitude],
+        ['Longitude', position.longitude]
+      ]),
       'result',
       root
     );
@@ -93,7 +105,11 @@ const locationPromise: Promise<GeoLocation> = services.getNavigatorGeoLocation()
   .catch(error => {
     console.log(error);
     addMessage(
-      `Error: ${JSON.stringify(error.message)}<br/>Using: ${JSON.stringify(geoLondon)}`,
+      `Error: ${error.message}.<br/>Using the following coordinates:` +
+      toHTMLTable([
+        ['Latitude', geoLondon.latitude],
+        ['Longitude', geoLondon.longitude]
+      ]),
       'error',
       root
     );
@@ -106,21 +122,17 @@ const sunsetSunrisePromise: Promise<SunsetSunrise> =
     .then(services.getSunriseSunset)
     .catch(error => mockLondon);
 
-const time = (date: string) => utils.DateFormatter.fromUtcString(date).getHourAsString();
+const convertDate = (date: string) => utils.DateFormatter.fromUtcString(date).getHourAsString();
 
 sunsetSunrisePromise
   .then(data => {
     addMessage(
-      `<table>
-      <tr><td class='labels'>Dawn:</td>
-        <td class='values'>${time(data.civil_twilight_begin)}</td></tr>
-      <tr><td class='labels'>Sunrise:</td>
-        <td class='values'> ${time(data.sunrise)}</td></tr>
-      <tr><td class='labels'>Sunset:</td>
-        <td class='values'>${time(data.sunset)}</td></tr>
-      <tr><td class='labels'>Dusk:</td>
-        <td class='values'>${time(data.civil_twilight_end)}</td></tr>
-      </table>`,
+      toHTMLTable([
+        ['Dawn', convertDate(data.civil_twilight_begin)],
+        ['Sunrise', convertDate(data.sunrise)],
+        ['Sunset', convertDate(data.sunset)],
+        ['Dusk', convertDate(data.civil_twilight_end)]
+      ]),
       'result',
       root
     );
