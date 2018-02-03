@@ -117,15 +117,8 @@ function convertGeoLocation(position: GeoLocation) {
 }
 
 //
-// Main
+// Runs
 //
-
-document.body.appendChild(testComponent());
-document.body.appendChild(utils.createBuildInfoElement('buildInfo', 'https://github.com/fmilitao/arghh/commit/'));
-
-const results = document.createElement('div');
-results.classList.add('resultList');
-document.body.appendChild(results);
 
 function drawLondonSample(resultList: HTMLElement) {
   const mockLocation = 'London';
@@ -135,16 +128,12 @@ function drawLondonSample(resultList: HTMLElement) {
   mockGeoLocation
     .then(location => {
       addMessage(`Sample data from <b>${mockLocation}</b>`, 'result', resultList);
-      addMessage(toHTMLTable(convertGeoLocation(geoLondon)), 'result', results);
+      addPosition(geoLondon, results);
       return mockSunsetSunrise;
     })
-    .then(data => {
-      addMessage(`Day: <b>${convertDate(data.astronomical_twilight_begin)}</b>`, 'result', resultList);
-      addMessage(toHTMLTable(convertSunsetSunrise(data)), 'result', resultList);
-      drawing.drawSunriseSunsetArc(data, resultList);
-    })
+    .then(data => addSunsetSunrise(data, results))
     .then(() => {
-      const pressMe = addMessage('Press me to get your data!', 'result', resultList);
+      const pressMe = addMessage('Press me to get your data!', 'pressMe', resultList);
       pressMe.onclick = () => {
         d3.select('svg').remove();
         d3.select(resultList).selectAll('*').remove();
@@ -154,9 +143,6 @@ function drawLondonSample(resultList: HTMLElement) {
       };
     });
 }
-
-// to exemplify
-drawLondonSample(results);
 
 function drawRealLocation(resultList: HTMLElement) {
   // attempt to get real location from browser, if not then freegeoip, if not then just use London.
@@ -171,10 +157,7 @@ function drawRealLocation(resultList: HTMLElement) {
     });
 
   locationPromise
-    .then(position => {
-      addMessage(toHTMLTable(convertGeoLocation(position)), 'result', resultList);
-      return position;
-    });
+    .then(position => addPosition(position, resultList));
 
   const sunsetSunrisePromise: Promise<SunsetSunrise> =
     locationPromise
@@ -185,12 +168,33 @@ function drawRealLocation(resultList: HTMLElement) {
       });
 
   sunsetSunrisePromise
-    .then(data => {
-      addMessage(`Day: <b>${convertDate(data.astronomical_twilight_begin)}</b>`, 'result', resultList);
-      addMessage(toHTMLTable(convertSunsetSunrise(data)), 'result', resultList);
-      drawing.drawSunriseSunsetArc(data, resultList);
-    });
+    .then(data => addSunsetSunrise(data, resultList));
 }
+
+function addPosition(position: GeoLocation, resultList: HTMLElement) {
+  addMessage(toHTMLTable(convertGeoLocation(position)), 'result', resultList);
+  return position;
+}
+
+function addSunsetSunrise(data: SunsetSunrise, resultList: HTMLElement) {
+  addMessage(`Date: <b>${convertDate(data.astronomical_twilight_begin)}</b>`, 'result', resultList);
+  addMessage(toHTMLTable(convertSunsetSunrise(data)), 'result', resultList);
+  drawing.drawSunriseSunsetArc(data, resultList);
+}
+
+//
+// Main
+//
+
+document.body.appendChild(testComponent());
+document.body.appendChild(utils.createBuildInfoElement('buildInfo', 'https://github.com/fmilitao/arghh/commit/'));
+
+const results = document.createElement('div');
+results.classList.add('resultList');
+document.body.appendChild(results);
+
+// to exemplify
+drawLondonSample(results);
 
 // tslint:disable-next-line:max-line-length
 // TODO: get city/country from: https://stackoverflow.com/questions/6159074/given-the-lat-long-coordinates-how-can-we-find-out-the-city-country ?

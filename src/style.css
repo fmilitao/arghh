@@ -28,6 +28,7 @@ svg {
 }
 
 .buildInfo {
+    opacity: 0.5;
     font-family: Courier New, Courier, monospace;
     color: black;
     font-size: 12px;
@@ -37,13 +38,25 @@ svg {
     padding: 5px;
 }
 
-.result {
+.error,
+.result,
+.pressMe {
     padding: 5px;
     margin-top: 5px;
     margin-bottom: 5px;
-
-    background-color: rgba(211, 211, 211, 0.5);
     border-radius: 3px;
+}
+
+.pressMe {
+    background-color: rgba(50, 58, 160, 0.5);
+}
+
+.pressMe:hover {
+    background-color: rgba(166, 170, 224, 0.856);
+}
+
+.result {
+    background-color: rgba(211, 211, 211, 0.5);
 }
 
 .resultList {
@@ -53,12 +66,7 @@ svg {
 }
 
 .error {
-    padding: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-
     background-color: rgba(255, 0, 0, 0.5);
-    border-radius: 3px;
 }
 
 .hello {
