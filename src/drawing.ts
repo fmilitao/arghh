@@ -3,6 +3,9 @@ import * as utils from './utils';
 
 const MAX_DAY_SECONDS = 24 * 60 * 60;
 
+type SvgType = d3.Selection<d3.BaseType, {}, HTMLElement, any>;
+type DataType = Array<{ time: number[], style: string }>;
+
 function convert(date: string | number) {
   const value = typeof date === 'string' ?
     utils.DateFormatter.fromUtcString(date).getSecondsOfToday() :
@@ -24,42 +27,72 @@ export function drawSunriseSunsetArc(
   // to ensure it goes over the rainbow...
   night[1] += 2 * Math.PI;
 
-  const info: Array<{ time: number[], style: string }> = [
-    {
-      style: 'dawn',
-      time: dawn
-    },
-    {
-      style: 'day',
-      time: day
-    },
-    {
-      style: 'dusk',
-      time: dusk
-    },
-    {
-      style: 'night',
-      time: night
-    }
+  const info: DataType = [
+    { style: 'dawn', time: dawn },
+    { style: 'day', time: day },
+    { style: 'dusk', time: dusk },
+    { style: 'night', time: night }
   ];
 
-  d3Test(info, targetElement);
+  drawSunsetSunrise(info, targetElement);
 }
 
-export function d3Test(
-  data: Array<{ time: number[], style: string }>,
-  targetElement: HTMLElement
-) {
+export function drawSunsetSunrise(data: DataType, targetElement: HTMLElement) {
   const width = window.innerWidth;
   const height = window.innerHeight;
   const radius = Math.min(width, height) * 0.7 / 2;
 
-  const svg = d3.select('body')
+  const svg: SvgType = d3.select('body')
     .append('svg')
     .attr('width', width)
     .attr('height', height);
 
-  // ==
+  const plotGroup: SvgType = svg.append('g')
+    .attr('transform', `translate(${width / 2},${height / 2})rotate(180)`);
+
+  drawSlices(plotGroup, radius, data);
+  drawNeedle(plotGroup, radius);
+
+  plotGroup
+    .style('opacity', 0)
+    .transition()
+    .duration(1000)
+    .style('opacity', 1);
+}
+
+function drawSlices(svg: SvgType, radius: number, data: DataType) {
+  for (const d of data) {
+    const arc = d3.arc()
+      .innerRadius(0)
+      .outerRadius(radius)
+      .startAngle(d.time[0])
+      .endAngle(d.time[1]);
+
+    // Added height and width so arc is visible
+    svg
+      .append('path')
+      .attr('d', arc)
+      .classed(d.style, true);
+  }
+}
+
+function drawNeedle(svg: SvgType, radius: number) {
+  const now = new utils.DateFormatter().getSecondsOfToday();
+
+  // rotation is in degrees!
+  const rotation = now * (360 / MAX_DAY_SECONDS);
+
+  svg.append('line')
+    .classed('marker', true)
+    .attr('x1', 0)
+    .attr('y1', 0)
+    .attr('x2', 0)
+    .attr('y2', -radius)
+    .attr('transform', `rotate(${rotation})`);
+}
+
+function defGradients(svg: SvgType) {
+  // TODO: the following is unused/broken.
   const defs = svg.append('defs');
 
   const gradient = defs.append('linearGradient')
@@ -92,45 +125,6 @@ export function d3Test(
   //   .attr('offset', '100%')
   //   .attr('stop-color', '#fff');
   // ===
-
-  const plotGroup = svg.append('g')
-    .attr('transform', `translate(${width / 2},${height / 2})rotate(180)`);
-
-  // console.log(data);
-
-  for (const d of data) {
-    const arc = d3.arc()
-      .innerRadius(0)
-      .outerRadius(radius)
-      .startAngle(d.time[0])
-      .endAngle(d.time[1]);
-
-    // Added height and width so arc is visible
-    plotGroup
-      .append('path')
-      .attr('d', arc)
-      .classed(d.style, true);
-  }
-
-  // rotation is in degrees!
-  const slice = 360 / MAX_DAY_SECONDS;
-  const now = new utils.DateFormatter().getSecondsOfToday();
-
-  const rotation = now * slice;
-
-  plotGroup.append('line')
-    .classed('marker', true)
-    .attr('x1', 0)
-    .attr('y1', 0)
-    .attr('x2', 0)
-    .attr('y2', -radius)
-    .attr('transform', `rotate(${rotation})`);
-
-  plotGroup
-    .style('opacity', 0)
-    .transition()
-    .duration(2000)
-    .style('opacity', 1);
 }
 
 // ======================================================================
