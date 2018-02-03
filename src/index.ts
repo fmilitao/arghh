@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import * as drawing from './drawing';
 import * as services from './services';
 import './style.css';
@@ -20,11 +21,21 @@ function testComponent() {
 // Add Result
 //
 
-function addMessage(message: string, style: string, targetElement: HTMLElement = document.body) {
+function addMessage(message: string, style: string, targetElement: HTMLElement) {
   const tmp = document.createElement('div');
   tmp.classList.add(style);
   tmp.innerHTML = message;
   targetElement.appendChild(tmp);
+
+  d3.select(tmp)
+    .style('opacity', 0)
+    .style('transform', 'translate(0px,-20px)')
+    .transition()
+    .duration(500)
+    .style('transform', 'translate(0px,0px)')
+    .style('opacity', 1);
+
+  return tmp;
 }
 
 //

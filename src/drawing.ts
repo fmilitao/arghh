@@ -125,6 +125,12 @@ export function d3Test(
     .attr('x2', 0)
     .attr('y2', -radius)
     .attr('transform', `rotate(${rotation})`);
+
+  plotGroup
+    .style('opacity', 0)
+    .transition()
+    .duration(2000)
+    .style('opacity', 1);
 }
 
 // ======================================================================
@@ -138,9 +144,7 @@ export function d3Test(
   //     }
   // });
 
+  // References for transitions with D3 arcs:
   // https://bl.ocks.org/shimizu/f90651541575f348a129444003a73467
+  // http://bl.ocks.org/mbostock/5100636
   // http://bl.ocks.org/cmdoptesc/6228457
-  // d3.selectAll('div')
-  //   .transition()
-  //   .duration(2000)
-  //   .style('color', 'blue');
