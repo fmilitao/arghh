@@ -47,6 +47,8 @@ export function drawSunsetSunrise(data: DataType, targetElement: HTMLElement) {
     .attr('width', width)
     .attr('height', height);
 
+  // defineGradients(svg);
+
   const plotGroup: SvgType = svg.append('g')
     .attr('transform', `translate(${width / 2},${height / 2})rotate(180)`);
 
@@ -61,18 +63,43 @@ export function drawSunsetSunrise(data: DataType, targetElement: HTMLElement) {
 }
 
 function drawSlices(svg: SvgType, radius: number, data: DataType) {
-  for (const d of data) {
-    const arc = d3.arc()
-      .innerRadius(0)
-      .outerRadius(radius)
-      .startAngle(d.time[0])
-      .endAngle(d.time[1]);
+  const arc = d3.arc()
+    // following values will not be animated
+    // you will not be able to override this below!
+    .innerRadius(0);
 
+  const teenFunction = (newRadius: number, newEndAngle: number, newStartAngle: number) => {
+    return (d: d3.DefaultArcObject) => {
+      const interpolateOuterRadius = d3.interpolate(d.outerRadius, newRadius);
+      const interpolateEndAngle = d3.interpolate(d.endAngle, newEndAngle);
+      const interpolateStartAngle = d3.interpolate(d.startAngle, newStartAngle);
+
+      return (t: number) => {
+        d.outerRadius = interpolateOuterRadius(t);
+        d.endAngle = interpolateEndAngle(t);
+        d.startAngle = interpolateStartAngle(t);
+        return arc(d);
+      };
+    };
+  };
+
+  for (const d of data) {
     // Added height and width so arc is visible
+    const startAnglePosition = (d.time[0] + d.time[1]) / 2;
+
     svg
       .append('path')
+      .datum({
+        endAngle: startAnglePosition,
+        outerRadius: radius / 2,
+        startAngle: startAnglePosition
+      })
       .attr('d', arc)
-      .classed(d.style, true);
+      .classed(d.style, true)
+      .transition()
+      .ease(d3.easeExp)
+      .duration(1000)
+      .attrTween('d', teenFunction(radius, d.time[1], d.time[0]));
   }
 }
 
@@ -87,16 +114,20 @@ function drawNeedle(svg: SvgType, radius: number) {
     .attr('x1', 0)
     .attr('y1', 0)
     .attr('x2', 0)
-    .attr('y2', -radius)
-    .attr('transform', `rotate(${rotation})`);
+    .attr('y2', 0)
+    .attr('transform', `rotate(${rotation})`)
+    .transition()
+    .duration(1000)
+    .ease(d3.easeCircle)
+    .attr('y2', -radius);
 }
 
-function defGradients(svg: SvgType) {
+function defineGradients(svg: SvgType) {
   // TODO: the following is unused/broken.
   const defs = svg.append('defs');
 
   const gradient = defs.append('linearGradient')
-    .attr('id', 'svgGradient')
+    .attr('id', 'gradient')
     .attr('x1', '20%')
     .attr('x2', '100%')
     .attr('y1', '20%')

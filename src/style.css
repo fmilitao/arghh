@@ -37,6 +37,9 @@ svg {
     bottom: 0;
     padding: 5px;
 }
+.buildInfo:hover {
+    opacity: 1;
+}
 
 .error,
 .result,
