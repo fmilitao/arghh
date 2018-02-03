@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import * as drawing from './drawing';
 import * as services from './services';
+import { getFreeGeoIpLocation } from './services';
 import './style.css';
 import * as utils from './utils';
 
@@ -37,17 +38,6 @@ function addMessage(message: string, style: string, targetElement: HTMLElement) 
 
   return tmp;
 }
-
-//
-// Other tests
-//
-
-const root = document.createElement('div');
-root.classList.add('resultList');
-document.body.appendChild(root);
-
-root.appendChild(testComponent());
-root.appendChild(utils.createBuildInfoElement('buildInfo', 'https://github.com/fmilitao/arghh/commit/'));
 
 //
 // Promises tests
@@ -93,61 +83,114 @@ const geoLisbon: GeoLocation = {
   longitude: -9.1393366
 };
 
+//
+// Utils
+//
+
+function convertHours(date: string) {
+  return utils.DateFormatter.fromUtcString(date).getHourAsString();
+}
+
+function convertDate(date: string) {
+  return utils.DateFormatter.fromUtcString(date).getTodayAsString();
+}
+
+function convertSunsetSunrise(data: SunsetSunrise) {
+  return [
+    ['Dawn', convertHours(data.civil_twilight_begin)],
+    ['Sunrise', convertHours(data.sunrise)],
+    ['Sunset', convertHours(data.sunset)],
+    ['Dusk', convertHours(data.civil_twilight_end)]
+  ];
+}
+
 function toHTMLTable(table: any[][]) {
   const tableContent = table.map(([label, value]) =>
     `<tr><td class='labels'>${label}:</td><td class='values'>${value}</td></tr>`
   ).join('');
 
-  return '<table>' + tableContent + '</table>';
+  return `<table>${tableContent}</table>`;
 }
 
-const locationPromise: Promise<GeoLocation> = services.getNavigatorGeoLocation()
-  .then(position => {
-    addMessage(
-      toHTMLTable([
-        ['Latitude', position.latitude],
-        ['Longitude', position.longitude]
-      ]),
-      'result',
-      root
-    );
-    return position;
-  })
-  .catch(error => {
-    console.log(error);
-    addMessage(
-      `Error: ${error.message}.<br/>Using the following coordinates:` +
-      toHTMLTable([
-        ['Latitude', geoLondon.latitude],
-        ['Longitude', geoLondon.longitude]
-      ]),
-      'error',
-      root
-    );
-    // using mock location for london
-    return geoLondon;
-  });
+function convertGeoLocation(position: GeoLocation) {
+  return [['Latitude', position.latitude], ['Longitude', position.longitude]];
+}
 
-const sunsetSunrisePromise: Promise<SunsetSunrise> =
+//
+// Main
+//
+
+document.body.appendChild(testComponent());
+document.body.appendChild(utils.createBuildInfoElement('buildInfo', 'https://github.com/fmilitao/arghh/commit/'));
+
+const results = document.createElement('div');
+results.classList.add('resultList');
+document.body.appendChild(results);
+
+function drawLondonSample(resultList: HTMLElement) {
+  const mockLocation = 'London';
+  const mockGeoLocation: Promise<GeoLocation> = Promise.resolve(geoLondon);
+  const mockSunsetSunrise: Promise<SunsetSunrise> = Promise.resolve(mockLondon);
+
+  mockGeoLocation
+    .then(location => {
+      addMessage(`Sample data from <b>${mockLocation}</b>`, 'result', resultList);
+      addMessage(toHTMLTable(convertGeoLocation(geoLondon)), 'result', results);
+      return mockSunsetSunrise;
+    })
+    .then(data => {
+      addMessage(`Day: <b>${convertDate(data.astronomical_twilight_begin)}</b>`, 'result', resultList);
+      addMessage(toHTMLTable(convertSunsetSunrise(data)), 'result', resultList);
+      drawing.drawSunriseSunsetArc(data, resultList);
+    })
+    .then(() => {
+      const pressMe = addMessage('Press me to get your data!', 'result', resultList);
+      pressMe.onclick = () => {
+        d3.select('svg').remove();
+        d3.select(resultList).selectAll('*').remove();
+
+        addMessage('Fetching data for your location.', 'result', resultList);
+        drawRealLocation(resultList);
+      };
+    });
+}
+
+// to exemplify
+drawLondonSample(results);
+
+function drawRealLocation(resultList: HTMLElement) {
+  // attempt to get real location from browser, if not then freegeoip, if not then just use London.
+  const locationPromise: Promise<GeoLocation> = services.getNavigatorGeoLocation()
+    .catch(error => {
+      console.log(error);
+      addMessage(`Error: ${error.message}.<br/>Trying 'freegeoip' service...`, 'error', resultList);
+      return getFreeGeoIpLocation().catch(geoIpError => {
+        addMessage(`Error: ${geoIpError.message}.<br/>Fine! Using location for <b>London</b>.`, 'error', resultList);
+        return geoLondon;
+      });
+    });
+
   locationPromise
-    .then(services.getSunriseSunset)
-    .catch(error => mockLondon);
+    .then(position => {
+      addMessage(toHTMLTable(convertGeoLocation(position)), 'result', resultList);
+      return position;
+    });
 
-const convertDate = (date: string) => utils.DateFormatter.fromUtcString(date).getHourAsString();
+  const sunsetSunrisePromise: Promise<SunsetSunrise> =
+    locationPromise
+      .then(services.getSunriseSunset)
+      .catch(error => {
+        addMessage(`Error: ${error.message}.<br/>Using sample values for <b>London</b>.`, 'error', resultList);
+        return mockLondon;
+      });
 
-sunsetSunrisePromise
-  .then(data => {
-    addMessage(
-      toHTMLTable([
-        ['Dawn', convertDate(data.civil_twilight_begin)],
-        ['Sunrise', convertDate(data.sunrise)],
-        ['Sunset', convertDate(data.sunset)],
-        ['Dusk', convertDate(data.civil_twilight_end)]
-      ]),
-      'result',
-      root
-    );
-    // addMessage(`Length: ${data.day_length}`, 'result');
-    return data;
-  })
-  .then(data => drawing.drawSunriseSunsetArc(data, root));
+  sunsetSunrisePromise
+    .then(data => {
+      addMessage(`Day: <b>${convertDate(data.astronomical_twilight_begin)}</b>`, 'result', resultList);
+      addMessage(toHTMLTable(convertSunsetSunrise(data)), 'result', resultList);
+      drawing.drawSunriseSunsetArc(data, resultList);
+    });
+}
+
+// tslint:disable-next-line:max-line-length
+// TODO: get city/country from: https://stackoverflow.com/questions/6159074/given-the-lat-long-coordinates-how-can-we-find-out-the-city-country ?
