@@ -53,13 +53,16 @@ export function drawSunsetSunrise(data: DataType, targetElement: HTMLElement) {
     .attr('transform', `translate(${width / 2},${height / 2})rotate(180)`);
 
   drawSlices(plotGroup, radius, data);
-  drawNeedle(plotGroup, radius);
 
   plotGroup
     .style('opacity', 0)
     .transition()
     .duration(1000)
-    .style('opacity', 1);
+    .style('opacity', 1)
+    .on('end', () => {
+      // drawNeedle(plotGroup, radius);
+      drawCircle(plotGroup, radius);
+    });
 }
 
 function drawSlices(svg: SvgType, radius: number, data: DataType) {
@@ -103,6 +106,79 @@ function drawSlices(svg: SvgType, radius: number, data: DataType) {
   }
 }
 
+function drawCircle(svg: SvgType, radius: number) {
+  const now = new utils.DateFormatter().getSecondsOfToday();
+  const endAngle = convert(now);
+  const startAngle = Math.PI / 2;
+  const arc = d3.arc()
+    .startAngle(startAngle)
+    // .endAngle(endAngle)
+    .outerRadius(radius);
+
+  const teenFunction = (newEndAngle: number) => {
+    return (d: d3.DefaultArcObject) => {
+      const interpolateEndAngle = d3.interpolate(d.endAngle, newEndAngle);
+
+      return (t: number) => {
+        d.endAngle = interpolateEndAngle(t);
+        return arc(d);
+      };
+    };
+  };
+
+  svg.append('path')
+    .datum({
+      endAngle: startAngle,
+      innerRadius: 0
+    })
+    .attr('d', arc)
+    .style('stroke', 'none')
+    .style('fill', 'rgba(255,255,255,0.6)')
+    .transition()
+    .duration(1000)
+    .attrTween('d', teenFunction(endAngle));
+
+  svg.append('path')
+    .datum({
+      endAngle: startAngle,
+      innerRadius: radius
+    })
+    .attr('d', arc)
+    .style('stroke', 'gray')
+    // .style('stroke-dasharray', '5, 5')
+    .style('fill', 'none')
+    .style('stroke-width', 4)
+    .transition()
+    .duration(1000)
+    .attrTween('d', teenFunction(endAngle));
+
+  // rotation is in degrees and we start of on the left side of the circle
+  const rotation = now * (360 / MAX_DAY_SECONDS) - 90;
+
+  // https://stackoverflow.com/questions/22568803/rotating-an-svg-element-360-degrees-does-nothing
+  const rotTween = () => {
+    const i = d3.interpolate(0, rotation);
+    return (t: number) => {
+      return 'rotate(' + i(t) + ')';
+    };
+  };
+
+  svg.append('circle')
+    .datum({
+      color: 'red',
+      radius: 10,
+      x_axis: radius,
+      y_axis: 0
+    })
+    .attr('cx', d => d.x_axis)
+    .attr('cy', d => d.y_axis)
+    .attr('r', d => d.radius)
+    .style('fill', d => d.color)
+    .transition()
+    .duration(1000)
+    .attrTween('transform', rotTween);
+}
+
 function drawNeedle(svg: SvgType, radius: number) {
   const now = new utils.DateFormatter().getSecondsOfToday();
 
@@ -125,6 +201,11 @@ function drawNeedle(svg: SvgType, radius: number) {
 function defineGradients(svg: SvgType) {
   // TODO: the following is unused/broken.
   const defs = svg.append('defs');
+
+  defs.append('filter')
+    .attr('id', 'blur')
+    .append('feGaussianBlur')
+    .attr('stdDeviation', 10);
 
   const gradient = defs.append('linearGradient')
     .attr('id', 'gradient')
