@@ -1,10 +1,12 @@
 # ARGHH [![Build Status](https://travis-ci.org/fmilitao/arghh.svg?branch=master)](https://travis-ci.org/fmilitao/arghh)
 
-Currently does nothing. Exciting!
+~~Currently does nothing. Exciting!~~ Shows sunset/sunrise with an animation.
 
 [Test Page](https://fmilitao.github.io/arghh/)
 
-More [public APIs](https://github.com/toddmotto/public-apis) to play with.
+More [public APIs](https://github.com/toddmotto/public-apis) to play with, some may require a CORS proxy to work in Chrome.
+
+Project was built just to play with: webpack + typescript + jasmine (which was frustrating to get it to work, thus the name), and Travis-CI.
 
 ## Setup/Building
 
