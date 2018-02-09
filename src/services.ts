@@ -43,6 +43,19 @@ export function getFreeGeoIpLocation(): Promise<GeoLocation> {
 }
 
 //
+// Reverse Geocoding
+//
+
+export function getReverseGeo(position: GeoLocation): Promise<GoogleReverseGeoLocation> {
+  // free API key...
+  const API_KEY = 'AIzaSyA-bDXWbCXL0crhWPjkhe0H4I8KOVmd3wg';
+  const API_URL = 'https://maps.googleapis.com/maps/api/geocode';
+  const url = `${API_URL}/json?latlng=${position.latitude},${position.longitude}&key=${API_KEY}`;
+  const fetcher = new utils.UrlFetcher();
+  return fetcher.fetchUrl(url).then(data => (data as GoogleReverseGeoLocation));
+}
+
+//
 // Sunset/Sunrise
 //
 

@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import * as drawing from './drawing';
+import { geoLondon, mockLondon, reverseLondon } from './samples';
 import * as services from './services';
 import { getFreeGeoIpLocation } from './services';
 import './style.css';
@@ -45,44 +46,6 @@ function addMessage(message: string, style: string, targetElement: HTMLElement) 
 
 Promise.resolve('Promises work in build!').then(console.log);
 
-// for Lisbon
-const mockLisbon: SunsetSunrise = {
-  astronomical_twilight_begin: '2018-01-28T06:13:40+00:00',
-  astronomical_twilight_end: '2018-01-28T19:25:29+00:00',
-  civil_twilight_begin: '2018-01-28T07:17:02+00:00',
-  civil_twilight_end: '2018-01-28T18:22:07+00:00',
-  day_length: 36526,
-  nautical_twilight_begin: '2018-01-28T06:45:02+00:00',
-  nautical_twilight_end: '2018-01-28T18:54:07+00:00',
-  solar_noon: '2018-01-28T12:49:34+00:00',
-  sunrise: '2018-01-28T07:45:11+00:00',
-  sunset: '2018-01-28T17:53:57+00:00'
-};
-
-// for London
-const mockLondon: SunsetSunrise = {
-  astronomical_twilight_begin: '2018-01-28T05:47:19+00:00',
-  astronomical_twilight_end: '2018-01-28T18:39:27+00:00',
-  civil_twilight_begin: '2018-01-28T07:07:03+00:00',
-  civil_twilight_end: '2018-01-28T17:19:43+00:00',
-  day_length: 32376,
-  nautical_twilight_begin: '2018-01-28T06:26:32+00:00',
-  nautical_twilight_end: '2018-01-28T18:00:14+00:00',
-  solar_noon: '2018-01-28T12:13:23+00:00',
-  sunrise: '2018-01-28T07:43:35+00:00',
-  sunset: '2018-01-28T16:43:11+00:00'
-};
-
-const geoLondon: GeoLocation = {
-  latitude: 51.5073509,
-  longitude: -0.1277583
-};
-
-const geoLisbon: GeoLocation = {
-  latitude: 38.7222524,
-  longitude: -9.1393366
-};
-
 //
 // Utils
 //
@@ -113,7 +76,8 @@ function toHTMLTable(table: any[][]) {
 }
 
 function convertGeoLocation(position: GeoLocation) {
-  return [['Latitude', position.latitude], ['Longitude', position.longitude]];
+  const fixed = 5;
+  return [['Latitude', position.latitude.toFixed(fixed)], ['Longitude', position.longitude.toFixed(fixed)]];
 }
 
 //
@@ -121,13 +85,17 @@ function convertGeoLocation(position: GeoLocation) {
 //
 
 function drawLondonSample(resultList: HTMLElement) {
-  const mockLocation = 'London';
   const mockGeoLocation: Promise<GeoLocation> = Promise.resolve(geoLondon);
   const mockSunsetSunrise: Promise<SunsetSunrise> = Promise.resolve(mockLondon);
 
+  const mockReverseLocation: Promise<GoogleReverseGeoLocation> = Promise.resolve(reverseLondon);
+
+  mockReverseLocation.then(reverse => {
+    addMessage(`Sample location: <b>${extractLocation(reverse)}</b>`, 'result', resultList);
+  });
+
   mockGeoLocation
     .then(location => {
-      addMessage(`Sample data from <b>${mockLocation}</b>`, 'result', resultList);
       addPosition(geoLondon, results);
       return mockSunsetSunrise;
     })
@@ -138,10 +106,17 @@ function drawLondonSample(resultList: HTMLElement) {
         d3.select('svg').remove();
         d3.select(resultList).selectAll('*').remove();
 
-        addMessage('Fetching data for your location.', 'result', resultList);
+        addMessage('Fetching real data.', 'result', resultList);
         drawRealLocation(resultList);
       };
     });
+}
+
+function extractLocation(reverse: GoogleReverseGeoLocation) {
+  return reverse.results[0]
+    .address_components
+    .filter(a => a.types.indexOf('postal_town') !== -1)[0]
+    .long_name;
 }
 
 function drawRealLocation(resultList: HTMLElement) {
@@ -157,7 +132,17 @@ function drawRealLocation(resultList: HTMLElement) {
     });
 
   locationPromise
-    .then(position => addPosition(position, resultList));
+    .then(position => {
+      addPosition(position, resultList);
+      const reverseGeo: Promise<GoogleReverseGeoLocation> = services.getReverseGeo(position);
+      reverseGeo.then(reverse => {
+        if (reverse.status === 'OK') {
+          addMessage(`Location: <b>${extractLocation(reverse)}</b>`, 'result', resultList);
+        } else {
+          addMessage(`${reverse.error_message}`, 'error', resultList);
+        }
+      });
+    });
 
   const sunsetSunrisePromise: Promise<SunsetSunrise> =
     locationPromise
@@ -195,6 +180,3 @@ document.body.appendChild(results);
 
 // to exemplify
 drawLondonSample(results);
-
-// tslint:disable-next-line:max-line-length
-// TODO: get city/country from: https://stackoverflow.com/questions/6159074/given-the-lat-long-coordinates-how-can-we-find-out-the-city-country ?

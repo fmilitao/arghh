@@ -26,3 +26,24 @@ interface GeoLocation {
   latitude: number;
   longitude: number;
 }
+
+interface GoogleReverseGeoLocation {
+  error_message?: string;
+  results: GoogleAddressComponent[];
+  status: string;
+}
+
+interface GoogleAddressComponent {
+  address_components: GoogleAddressResult[];
+  formatted_address: string;
+  geometry: any;
+  place_id: string;
+  types: string[];
+  // don't care about the rest
+}
+
+interface GoogleAddressResult {
+  long_name: string;
+  short_name: string;
+  types: string[];
+}

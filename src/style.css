@@ -78,10 +78,10 @@ svg {
 }
 
 .marker {
-    stroke: red;
-    stroke-width: 8;
+    stroke: rgb(251, 255, 0);
+    stroke-width: 5;
     stroke-linecap: round;
-    fill: 'none';
+    fill: rgb(231, 197, 42);
 }
 
 .labels {

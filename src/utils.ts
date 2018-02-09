@@ -33,7 +33,7 @@ export class UrlFetcher {
         private readonly axiosImpl: axios.AxiosStatic = axios.default
     ) { }
 
-    public fetchUrl(url: string, proxyCors: boolean = false): Promise<string> {
+    public fetchUrl<T>(url: string, proxyCors: boolean = false): Promise<T> {
         const targetUrl = proxyCors ? this.addCorsProxy(url) : url;
         return this.axiosImpl.get(targetUrl).then(response => response.data);
     }

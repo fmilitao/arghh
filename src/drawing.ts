@@ -126,31 +126,25 @@ function drawCircle(svg: SvgType, radius: number) {
     };
   };
 
-  svg.append('path')
+  const fill = svg.append('path')
     .datum({
       endAngle: startAngle,
       innerRadius: 0
     })
     .attr('d', arc)
     .style('stroke', 'none')
-    .style('fill', 'rgba(255,255,255,0.6)')
-    .transition()
-    .duration(1000)
-    .attrTween('d', teenFunction(endAngle));
+    .style('fill', 'rgba(255,255,255,0.5)');
 
-  svg.append('path')
+  const path = svg.append('path')
     .datum({
       endAngle: startAngle,
       innerRadius: radius
     })
     .attr('d', arc)
-    .style('stroke', 'gray')
+    .style('stroke', 'rgba(255,255,0,0.5)')
     // .style('stroke-dasharray', '5, 5')
     .style('fill', 'none')
-    .style('stroke-width', 4)
-    .transition()
-    .duration(1000)
-    .attrTween('d', teenFunction(endAngle));
+    .style('stroke-width', 2);
 
   // rotation is in degrees and we start of on the left side of the circle
   const rotation = now * (360 / MAX_DAY_SECONDS) - 90;
@@ -163,20 +157,42 @@ function drawCircle(svg: SvgType, radius: number) {
     };
   };
 
-  svg.append('circle')
+  const sun = svg.append('circle')
     .datum({
-      color: 'red',
-      radius: 10,
+      radius: 0,
       x_axis: radius,
       y_axis: 0
     })
     .attr('cx', d => d.x_axis)
     .attr('cy', d => d.y_axis)
     .attr('r', d => d.radius)
-    .style('fill', d => d.color)
-    .transition()
+    .classed('marker', true);
+
+  sun.transition()
     .duration(1000)
-    .attrTween('transform', rotTween);
+    .attr('r', 10)
+    .ease(d3.easeElastic)
+    .on('end', () => {
+      const duration = 1000;
+      path.transition()
+        .duration(duration)
+        .attrTween('d', teenFunction(endAngle))
+        .transition()
+        .duration(duration)
+        .style('opacity', 0);
+
+      fill.transition()
+        .duration(duration)
+        .attrTween('d', teenFunction(endAngle))
+        .transition()
+        .duration(duration)
+        .style('opacity', 0);
+
+      sun.transition()
+        .ease(d3.easeCubic)
+        .duration(duration)
+        .attrTween('transform', rotTween);
+    });
 }
 
 function drawNeedle(svg: SvgType, radius: number) {
