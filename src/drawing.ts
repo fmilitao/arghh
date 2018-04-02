@@ -15,7 +15,8 @@ function convert(date: string | number) {
 
 export function drawSunriseSunsetArc(
   data: SunsetSunrise,
-  targetElement: HTMLElement
+  targetElement: HTMLElement,
+  now: utils.DateFormatter
 ) {
   // http://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
   // https://sunrise-sunset.org/
@@ -34,10 +35,14 @@ export function drawSunriseSunsetArc(
     { style: 'night', time: night }
   ];
 
-  drawSunsetSunrise(info, targetElement);
+  drawSunsetSunrise(info, targetElement, now);
 }
 
-export function drawSunsetSunrise(data: DataType, targetElement: HTMLElement) {
+export function drawSunsetSunrise(
+  data: DataType,
+  targetElement: HTMLElement,
+  now: utils.DateFormatter
+) {
   const width = window.innerWidth;
   const height = window.innerHeight;
   const radius = Math.min(width, height) * 0.7 / 2;
@@ -61,7 +66,7 @@ export function drawSunsetSunrise(data: DataType, targetElement: HTMLElement) {
     .style('opacity', 1)
     .on('end', () => {
       // drawNeedle(plotGroup, radius);
-      drawCircle(plotGroup, radius);
+      drawCircle(plotGroup, radius, now);
     });
 }
 
@@ -106,8 +111,8 @@ function drawSlices(svg: SvgType, radius: number, data: DataType) {
   }
 }
 
-function drawCircle(svg: SvgType, radius: number) {
-  const now = new utils.DateFormatter().getSecondsOfToday();
+function drawCircle(svg: SvgType, radius: number, currentDate: utils.DateFormatter) {
+  const now = currentDate.getSecondsOfToday();
   const endAngle = convert(now);
   const startAngle = Math.PI / 2;
   const arc = d3.arc()

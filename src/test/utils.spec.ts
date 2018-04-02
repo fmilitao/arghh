@@ -42,7 +42,7 @@ describe('utils.DateFormatter', () => {
     const formatter = new utils.DateFormatter(testMoment);
 
     it('should format hours as HH:mm:ss', () => {
-        const time = utils.DateFormatter.fromUtcString('2017-08-08 20:31:12');
+        const time = utils.DateFormatter.fromUtcString('2017-08-08 20:31:12', false);
         expect(time.getHourAsString()).toEqual('20:31:12');
     });
 

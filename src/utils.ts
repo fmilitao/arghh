@@ -48,16 +48,18 @@ export class UrlFetcher {
 //
 
 export class DateFormatter {
-    public static fromUtcString(utcDateString: string) {
-        return new DateFormatter(moment.utc(utcDateString));
+    public static fromUtcString(utcDateString: string, useLocal: boolean = true) {
+        return new DateFormatter(moment.utc(utcDateString), useLocal);
     }
 
     private static DATE_FORMAT = 'YYYY-MM-DD';
     private static HOUR_FORMAT = 'HH:mm:ss';
 
-    constructor(
-        private readonly now: moment.Moment = moment()
-    ) { }
+    private readonly now: moment.Moment;
+
+    constructor(now: moment.Moment = moment(), useLocal: boolean = true) {
+        this.now = useLocal ? now.local() : now;
+    }
 
     public getTodayAsString() {
         return this.now.format(DateFormatter.DATE_FORMAT);

@@ -163,8 +163,10 @@ function addPosition(position: GeoLocation, resultList: HTMLElement) {
 
 function addSunsetSunrise(data: SunsetSunrise, resultList: HTMLElement) {
   addMessage(`Date: <b>${convertDate(data.astronomical_twilight_begin)}</b>`, 'result', resultList);
+  const now = new utils.DateFormatter();
   addMessage(toHTMLTable(convertSunsetSunrise(data)), 'result', resultList);
-  drawing.drawSunriseSunsetArc(data, resultList);
+  addMessage(`Current Time: <b>${now.getHourAsString()}</b>`, 'result', resultList);
+  drawing.drawSunriseSunsetArc(data, resultList, now);
 }
 
 //
