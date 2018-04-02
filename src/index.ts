@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import * as drawing from './drawing';
-import { geoLondon, mockLondon, reverseLondon } from './samples';
+import { geoLondon, mockLondon, mockLondon2, reverseLondon } from './samples';
 import * as services from './services';
 import { getFreeGeoIpLocation } from './services';
 import './style.css';
@@ -86,7 +86,7 @@ function convertGeoLocation(position: GeoLocation) {
 
 function drawLondonSample(resultList: HTMLElement) {
   const mockGeoLocation: Promise<GeoLocation> = Promise.resolve(geoLondon);
-  const mockSunsetSunrise: Promise<SunsetSunrise> = Promise.resolve(mockLondon);
+  const mockSunsetSunrise: Promise<SunsetSunrise> = Promise.resolve(mockLondon2);
 
   const mockReverseLocation: Promise<GoogleReverseGeoLocation> = Promise.resolve(reverseLondon);
 

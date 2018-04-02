@@ -27,6 +27,19 @@ export const mockLondon: SunsetSunrise = {
     sunset: '2018-01-28T16:43:11+00:00'
 };
 
+export const mockLondon2: SunsetSunrise = {
+    astronomical_twilight_begin: '2018-04-02T03:33:07+00:00',
+    astronomical_twilight_end: '2018-04-02T20:35:46+00:00',
+    civil_twilight_begin: '2018-04-02T04:58:36+00:00',
+    civil_twilight_end: '2018-04-02T19:10:17+00:00',
+    day_length: 47025,
+    nautical_twilight_begin: '2018-04-02T04:17:25+00:00',
+    nautical_twilight_end: '2018-04-02T19:51:28+00:00',
+    solar_noon: '2018-04-02T12:04:27+00:00',
+    sunrise: '2018-04-02T05:32:34+00:00',
+    sunset: '2018-04-02T18:36:19+00:00'
+};
+
 export const geoLondon: GeoLocation = {
     latitude: 51.5073509,
     longitude: -0.1277583
