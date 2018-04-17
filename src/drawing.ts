@@ -114,7 +114,7 @@ function drawSlices(svg: SvgType, radius: number, data: DataType) {
 function drawCircle(svg: SvgType, radius: number, currentDate: utils.DateFormatter) {
   const now = currentDate.getSecondsOfToday();
   const endAngle = convert(now);
-  const startAngle = Math.PI / 2;
+  const startAngle = 0;
   const arc = d3.arc()
     .startAngle(startAngle)
     // .endAngle(endAngle)
@@ -152,7 +152,7 @@ function drawCircle(svg: SvgType, radius: number, currentDate: utils.DateFormatt
     .style('stroke-width', 2);
 
   // rotation is in degrees and we start of on the left side of the circle
-  const rotation = now * (360 / MAX_DAY_SECONDS) - 90;
+  const rotation = now * (360 / MAX_DAY_SECONDS);
 
   // https://stackoverflow.com/questions/22568803/rotating-an-svg-element-360-degrees-does-nothing
   const rotTween = () => {
@@ -165,8 +165,8 @@ function drawCircle(svg: SvgType, radius: number, currentDate: utils.DateFormatt
   const sun = svg.append('circle')
     .datum({
       radius: 0,
-      x_axis: radius,
-      y_axis: 0
+      x_axis: 0,
+      y_axis: -radius
     })
     .attr('cx', d => d.x_axis)
     .attr('cy', d => d.y_axis)
