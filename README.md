@@ -1,8 +1,10 @@
 # ARGHH [![Build Status](https://travis-ci.org/fmilitao/arghh.svg?branch=master)](https://travis-ci.org/fmilitao/arghh)
 
-~~Currently does nothing. Exciting!~~ Shows sunset/sunrise with an animation.
+~~Currently does nothing. Exciting!~~
 
-[Test Page](https://fmilitao.github.io/arghh/)
+Test pages:
+ * [Show sunset/sunrise with animation](https://fmilitao.github.io/arghh/sunny.html)
+ * [Sound visualizations](https://fmilitao.github.io/arghh/sound.html)
 
 More [public APIs](https://github.com/toddmotto/public-apis) to play with, some may require a CORS proxy to work in Chrome.
 

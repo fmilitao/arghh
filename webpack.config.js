@@ -38,7 +38,10 @@ Build date: ${build}
 `);
 
 module.exports = {
-    entry: './src/index.ts',
+    entry: {
+        'page1': './src/sunny.ts',
+        'page2': './src/sound/index.ts'
+    },
     devtool: envConfig.devtool,
     devServer: {
         contentBase: './dist'
@@ -79,11 +82,18 @@ module.exports = {
             __BUILD__: JSON.stringify(build)
         }),
         new HtmlWebpackPlugin({
-            title: 'Test Output'
+            title: 'Sunset/Sunrise',
+            chunks: ['page1'],
+            filename: 'sunny.html'
+        }),
+        new HtmlWebpackPlugin({
+            title: 'Audio Visualization',
+            chunks: ['page2'],
+            filename: 'sound.html'
         })
     ].concat(envConfig.extraPlugins),
     output: {
-        filename: 'bundle.js',
+        filename: '[name]-bundle.js',
         path: path.resolve(__dirname, 'dist')
     }
 };
