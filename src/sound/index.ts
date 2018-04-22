@@ -46,14 +46,27 @@ function initAll() {
     const body = document.body;
     body.style.fontFamily = 'monospace';
     const title = document.createElement('div');
-    title.innerText = 'Sound visualizations.';
+    title.innerHTML = '<b>Sound visualizations</b>. Press any key/click to stop/start.';
     title.style.padding = '5px';
     body.appendChild(title);
 
-    const width = document.body.clientWidth;
+    const buildInfo = document.createElement('div');
+    const commitInfo = `Commit: <a href="https://github.com/fmilitao/arghh/commit/${__VERSION__}">${__VERSION__}</a>`;
+    const buildDate = `Build date: ${__BUILD__}`;
+    buildInfo.innerHTML = `${commitInfo}<br/>${buildDate}`;
+    buildInfo.style.opacity = '0.5';
+    buildInfo.style.fontSize = '12px';
+    buildInfo.style.fontWeight = 'bold';
+    buildInfo.style.position = 'absolute';
+    buildInfo.style.bottom = '0';
+    buildInfo.style.padding = '5px';
+    document.body.appendChild(buildInfo);
+
+    // note that a large width/height value may reduce updates below 60fps.
+    const width = 700;
     const height = 200;
     const frequencyCanvas = newCanvas(width, height, 'Frequency');
-    const sineCanvas = newCanvas(width, height, 'Wave');
+    const sineCanvas = newCanvas(width, height, 'Waveform');
     const spectrogramCanvas = newCanvas(width, height, 'Spectrogram');
 
     const audioContext = new AudioContext();
@@ -86,23 +99,19 @@ function initAll() {
 
     startAudio();
 
-    // keyboard start/stop
-    const SPACEBAR_KEYCODE = 32;
     let stop = true;
-
-    window.onkeyup = event => {
-        if (event.keyCode === SPACEBAR_KEYCODE) {
-            console.log('toggle');
-            if (stop) {
-                stopVisualizers();
-            } else {
-                startAudio();
-            }
-            stop = !stop;
+    function toggleVisualization() {
+        console.log(`Stop: ${stop}.`);
+        if (stop) {
+            stopVisualizers();
+        } else {
+            startAudio();
         }
-    };
+        stop = !stop;
+    }
 
-    // we never 'audioContext.close();' because the object is to be reused.
+    window.onkeyup = toggleVisualization;
+    window.onclick = toggleVisualization;
 }
 
 // start everything

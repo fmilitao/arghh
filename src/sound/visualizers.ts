@@ -30,6 +30,7 @@ abstract class BaseVisualizer<ArrayType> {
         this.graphicContext = canvasElement.getContext('2d');
         this.graphicContext.fillStyle = '#000000';
         this.graphicContext.strokeStyle = '#c0c0c0';
+        this.graphicContext.fillRect(0, 0, this.graphicWidth, this.graphicHeight);
 
         this.stopping = false;
     }
@@ -77,20 +78,17 @@ export class FrequencyVisualizer extends BaseVisualizer<Float32Array> {
 
     public innerDraw() {
         this.graphicContext.fillRect(0, 0, this.graphicWidth, this.graphicHeight);
+        const scale = this.graphicHeight / 80;
 
-        if (this.connectedNode) {
-            const scale = this.graphicHeight / 80;
+        this.analyserNode.getFloatFrequencyData(this.fftData);
 
-            this.analyserNode.getFloatFrequencyData(this.fftData);
+        for (let i = 0; i < this.graphicWidth; ++i) {
+            const y = -(this.fftData[i] + 15) * scale;
 
-            for (let i = 0; i < this.graphicWidth; ++i) {
-                const y = -(this.fftData[i] + 15) * scale;
-
-                this.graphicContext.beginPath();
-                this.graphicContext.moveTo(i + 0.5, this.graphicHeight);
-                this.graphicContext.lineTo(i + 0.5, y);
-                this.graphicContext.stroke();
-            }
+            this.graphicContext.beginPath();
+            this.graphicContext.moveTo(i + 0.5, this.graphicHeight);
+            this.graphicContext.lineTo(i + 0.5, y);
+            this.graphicContext.stroke();
         }
     }
 }
@@ -103,26 +101,20 @@ export class SpectrogramVisualizer extends BaseVisualizer<Float32Array> {
 
         this.pixel = this.graphicContext.createImageData(1, 1);
         this.pixel.data[3] = 255;
-
-        this.graphicContext.fillRect(0, 0, this.graphicWidth, this.graphicHeight);
     }
 
     public innerDraw() {
-        if (!this.connectedNode) {
-            this.graphicContext.fillRect(0, 0, this.graphicWidth, this.graphicHeight);
-        } else {
-            const slideImage = this.graphicContext.getImageData(0, 0, this.graphicWidth - 1, this.graphicHeight);
-            this.graphicContext.putImageData(slideImage, 1, 0);
+        const slideImage = this.graphicContext.getImageData(0, 0, this.graphicWidth - 1, this.graphicHeight);
+        this.graphicContext.putImageData(slideImage, 1, 0);
 
-            this.analyserNode.getFloatFrequencyData(this.fftData);
+        this.analyserNode.getFloatFrequencyData(this.fftData);
 
-            for (let i = 0; i < this.graphicHeight; ++i) {
-                const n = Math.min(Math.max((this.fftData[i] + 80) * 4, 0), 255);
-                this.pixel.data[0] = n;
-                this.pixel.data[1] = n;
-                this.pixel.data[2] = n;
-                this.graphicContext.putImageData(this.pixel, 0, this.graphicHeight - i);
-            }
+        for (let i = 0; i < this.graphicHeight; ++i) {
+            const n = Math.min(Math.max((this.fftData[i] + 80) * 4, 0), 255);
+            this.pixel.data[0] = n;
+            this.pixel.data[1] = n;
+            this.pixel.data[2] = n;
+            this.graphicContext.putImageData(this.pixel, 0, this.graphicHeight - i);
         }
     }
 }
@@ -131,7 +123,6 @@ export class SineVisualizer extends BaseVisualizer<Uint8Array> {
     constructor(audioContext: AudioContext, canvasElement: HTMLCanvasElement) {
         super(audioContext, canvasElement, Uint8Array);
 
-        this.graphicContext.clearRect(0, 0, this.graphicWidth, this.graphicHeight);
         this.graphicContext.lineWidth = 2;
     }
 
