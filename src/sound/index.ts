@@ -1,3 +1,4 @@
+import './style.css';
 import { FrequencyVisualizer, SineVisualizer, SpectrogramVisualizer } from './visualizers';
 
 type MediaObjects = [MediaStreamAudioSourceNode, MediaStreamTrack[]];
@@ -18,22 +19,16 @@ function getMediaObjects(audioContext: AudioContext): Promise<MediaObjects> {
 
 function newCanvas(width: number, height: number, label: string) {
     const div = document.createElement('div');
-    div.style.position = 'relative';
+    div.className = 'canvasWrapper';
 
     const canvas = document.createElement('canvas');
+    canvas.className = 'canvasStyle';
     canvas.width = width;
     canvas.height = height;
 
     const text = document.createElement('div');
-    text.style.position = 'absolute';
-    text.style.zIndex = '1';
-    text.style.cssFloat = 'left';
-    text.style.top = '0';
-    text.style.left = '0';
-
+    text.className = 'canvasText';
     text.innerText = label;
-    text.style.color = 'white';
-    text.style.padding = '5px';
 
     div.appendChild(canvas);
     div.appendChild(text);
@@ -44,22 +39,16 @@ function newCanvas(width: number, height: number, label: string) {
 function initAll() {
     // initialize resources
     const body = document.body;
-    body.style.fontFamily = 'monospace';
     const title = document.createElement('div');
     title.innerHTML = '<b>Sound visualizations</b>. Press any key/click to stop/start.';
-    title.style.padding = '5px';
+    title.className = 'title';
     body.appendChild(title);
 
     const buildInfo = document.createElement('div');
     const commitInfo = `Commit: <a href="https://github.com/fmilitao/arghh/commit/${__VERSION__}">${__VERSION__}</a>`;
     const buildDate = `Build date: ${__BUILD__}`;
     buildInfo.innerHTML = `${commitInfo}<br/>${buildDate}`;
-    buildInfo.style.opacity = '0.5';
-    buildInfo.style.fontSize = '12px';
-    buildInfo.style.fontWeight = 'bold';
-    buildInfo.style.position = 'absolute';
-    buildInfo.style.bottom = '0';
-    buildInfo.style.padding = '5px';
+    buildInfo.className = 'buildInfo';
     document.body.appendChild(buildInfo);
 
     // note that a large width/height value may reduce updates below 60fps.

@@ -24,12 +24,13 @@ abstract class BaseVisualizer<ArrayType> {
         this.analyserNode.fftSize = fftSize;
         this.fftData = new arrayConstructor(this.analyserNode.frequencyBinCount);
 
-        this.graphicWidth = parseInt(getComputedStyle(canvasElement).width, 10);
-        this.graphicHeight = parseInt(getComputedStyle(canvasElement).height, 10);
+        const canvasStyle = getComputedStyle(canvasElement);
+        this.graphicWidth = parseInt(canvasStyle.width, 10);
+        this.graphicHeight = parseInt(canvasStyle.height, 10);
 
         this.graphicContext = canvasElement.getContext('2d');
-        this.graphicContext.fillStyle = '#000000';
-        this.graphicContext.strokeStyle = '#c0c0c0';
+        this.graphicContext.fillStyle = canvasStyle.backgroundColor;
+        this.graphicContext.strokeStyle = canvasStyle.color;
         this.graphicContext.fillRect(0, 0, this.graphicWidth, this.graphicHeight);
 
         this.stopping = false;
@@ -61,7 +62,6 @@ abstract class BaseVisualizer<ArrayType> {
 
     private draw() {
         if (this.stopping) {
-            // done!
             return;
         }
 
