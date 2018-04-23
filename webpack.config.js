@@ -39,8 +39,8 @@ Build date: ${build}
 
 module.exports = {
     entry: {
-        'page1': './src/sunny.ts',
-        'page2': './src/sound/index.ts'
+        'sunny': './src/sunny/index.ts',
+        'sound': './src/sound/index.ts'
     },
     devtool: envConfig.devtool,
     devServer: {
@@ -83,12 +83,12 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             title: 'Sunset/Sunrise',
-            chunks: ['page1'],
+            chunks: ['sunny'],
             filename: 'sunny.html'
         }),
         new HtmlWebpackPlugin({
             title: 'Audio Visualization',
-            chunks: ['page2'],
+            chunks: ['sound'],
             filename: 'sound.html'
         })
     ].concat(envConfig.extraPlugins),

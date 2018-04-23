@@ -1,7 +1,7 @@
 import axios from 'axios';
 import 'jasmine';
 import * as moment from 'moment';
-import * as utils from '../utils';
+import * as utils from '../sunny/utils';
 
 console.log('Test runner.');
 Promise.resolve('Promises work in tests!').then(console.log);

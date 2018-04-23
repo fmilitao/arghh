@@ -1,14 +1,12 @@
 # ARGHH [![Build Status](https://travis-ci.org/fmilitao/arghh.svg?branch=master)](https://travis-ci.org/fmilitao/arghh)
 
-~~Currently does nothing. Exciting!~~
+Try on-line:
+ 1. [Show sunset/sunrise with animation.](https://fmilitao.github.io/arghh/sunny.html)
+ 2. [Sound visualizations.](https://fmilitao.github.io/arghh/sound.html)
 
-Test pages:
- * [Show sunset/sunrise with animation](https://fmilitao.github.io/arghh/sunny.html)
- * [Sound visualizations](https://fmilitao.github.io/arghh/sound.html)
-
-More [public APIs](https://github.com/toddmotto/public-apis) to play with, some may require a CORS proxy to work in Chrome.
-
-Project was built just to play with: webpack + typescript + jasmine (which was frustrating to get it to work, thus the name), and Travis-CI.
+Notes:
+ * More [public APIs](https://github.com/toddmotto/public-apis) to play with, some may require a CORS proxy to work in Chrome.
+ * Project was built to play with: webpack + typescript + jasmine (which was frustrating to get it to work, thus the name), and Travis-CI.
 
 ## Setup/Building
 
@@ -37,6 +35,6 @@ You can run it as the following one-liner:
 |---|---|
 |`src/typings`|All custom typescript definition files.|
 |`src/test`|All test files.|
-|`src/`|Remaining files are left at the root of `src`.|
+|`src/*`|Each test page sources in its own directory.|
 |`dist/`|Contains the webpack-generated bundle.|
 |`coverage/`|Coverage report.|
