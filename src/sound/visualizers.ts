@@ -131,20 +131,16 @@ export class SineVisualizer extends BaseVisualizer<Uint8Array> {
         this.analyserNode.getByteTimeDomainData(this.fftData);
 
         this.graphicContext.fillRect(0, 0, this.graphicWidth, this.graphicHeight);
-        this.graphicContext.beginPath();
 
-        let x = 0;
-        for (let i = 0; i < this.fftData.length; i++) {
+        this.graphicContext.beginPath();
+        this.graphicContext.moveTo(0, this.graphicHeight / 2);
+
+        for (let i = 0; i < this.fftData.length; ++i) {
             const v = this.fftData[i] / 128.0;
             const y = v * this.graphicHeight / 2;
+            const x = i * sliceWidth;
 
-            if (i === 0) {
-                this.graphicContext.moveTo(x, y);
-            } else {
-                this.graphicContext.lineTo(x, y);
-            }
-
-            x += sliceWidth;
+            this.graphicContext.lineTo(x, y);
         }
 
         this.graphicContext.lineTo(this.graphicWidth, this.graphicHeight / 2);
